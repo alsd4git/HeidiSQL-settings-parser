@@ -51,19 +51,24 @@ def read_connection_data(filename):
         connections.append(current_connection)
     return connections
 
-connections = read_connection_data("export_heidi.txt")
+# define a main function
+def main():
+    # call read_connection_data() function with file name as argument
+    connections = read_connection_data("export_heidi.txt")
 
-# Print the list of connections and their settings
-for conn in connections:
+    # iterate over connections and print details
+    for conn in connections:
+        print(f"Connection name: {conn.get('name', '')}")
+        print(f"Host: {conn.get('Host', '')}")
+        print(f"Port: {conn.get('Port', '')}")
+        print(f"User: {conn.get('User', '')}")
+        print(f"Password (encoded): {conn.get('Password', '')}")
+        print(f"Password (decoded): {decode_password(conn.get('Password', ''))}")
+        print(f"Library: {conn.get('Library', '')}")
+        print(f"ServerVersion: {conn.get('ServerVersion', '')}")
+        print(f"ServerVersionFull: {conn.get('ServerVersionFull', '')}")
+        print()
 
-    print(f"Connection name: {conn.get('name', '')}")
-    print(f"Host: {conn.get('Host', '')}")
-    print(f"Port: {conn.get('Port', '')}")
-    print(f"User: {conn.get('User', '')}")
-    print(f"Password (encoded): {conn.get('Password', '')}")
-    print(f"Password (decoded): {decode_password(conn.get('Password', ''))}")
-    # just to have some more log data
-    print(f"Library: {conn.get('Library', '')}")
-    print(f"ServerVersion: {conn.get('ServerVersion', '')}")
-    print(f"ServerVersionFull: {conn.get('ServerVersionFull', '')}")
-    print()
+# call the main function
+if __name__ == "__main__":
+    main()
