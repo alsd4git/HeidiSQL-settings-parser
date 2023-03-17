@@ -17,42 +17,41 @@ def encode_password(s):
     return hex_str
 
 
-with open("export_heidi.txt", "r") as f:
-    settings = f.read()
+def read_connection_data(filename):
+    with open(filename, "r") as f:
+        settings = f.read()
 
-# print(encode_password('prod_password'))
-# print(encode_password('dev_password'))
+    connections = []
+    current_connection = {}
 
-connections = []
-current_connection = {}
+    for line in settings.split("\n"):
+        if line.startswith("Servers\\"):
+            # A new connection setting
+            subkeys = line.split("\\")
+            conn_name = subkeys[1]
+            line_details = subkeys[2].split("<|||>")
 
-for line in settings.split("\n"):
-    if line.startswith("Servers\\"):
-        # A new connection setting
-        subkeys = line.split("\\")
-        conn_name = subkeys[1]
-        line_details = subkeys[2].split("<|||>")
+            try:
+                key = line_details[0]
+                value = line_details[2]
+            except IndexError:
+                continue
 
-        ignoreLine = False
-        try:
-            key = line_details[0]
-            value = line_details[2]
-        except IndexError:
-            ignoreLine = True
-            continue
+            if not current_connection or current_connection["name"] != conn_name:
+                # Add the previous connection to the list
+                if current_connection:
+                    connections.append(current_connection)
+                # Start a new connection dictionary
+                current_connection = {"name": conn_name}
+            # Add the key-value pair to the current connection dictionary
+            current_connection[key.strip()] = value.strip()
 
-        if not current_connection or current_connection["name"] != conn_name:
-            # Add the previous connection to the list
-            if current_connection:
-                connections.append(current_connection)
-            # Start a new connection dictionary
-            current_connection = {"name": conn_name}
-        # Add the key-value pair to the current connection dictionary
-        current_connection[key.strip()] = value.strip()
+    # Add the last connection to the list of connections
+    if current_connection:
+        connections.append(current_connection)
+    return connections
 
-# Add the last connection to the list of connections
-if current_connection:
-    connections.append(current_connection)
+connections = read_connection_data("export_heidi.txt")
 
 # Print the list of connections and their settings
 for conn in connections:
